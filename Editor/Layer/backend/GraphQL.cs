@@ -17,6 +17,14 @@ public class GraphQL
 
   private static string ENDPOINT = "https://api.app.layer.ai/";
 
+  public object getMySimpleUser() 
+  {
+    return call(
+        "getMyUser",
+        new JObject(),
+        Queries.getMySimpleUser);
+  }
+
   public object getMyUser()
   {
     return call(
@@ -30,8 +38,6 @@ public class GraphQL
     query = query.Replace("_PROMPT", prompt);
     query = query.Replace("_WORKSPACEID", workspaceId);
     query = query.Replace("_STYLEID", styleId);
-
-    Debug.Log(query);
 
     return call(
         "generateImages",

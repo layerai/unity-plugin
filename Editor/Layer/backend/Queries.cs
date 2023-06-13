@@ -2,6 +2,18 @@ public class Queries
 {
 
   // getMyUser query
+  public static string getMySimpleUser = @"
+  query getMyUser {
+    getMyUser {
+      __typename
+      ... on User {
+        id
+      }
+    }
+  }
+  ";
+
+  // getMyUser query
   public static string getMyUser = @"
   query getMyUser {
     getMyUser {

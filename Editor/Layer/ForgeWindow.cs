@@ -34,6 +34,34 @@ public class ForgeWindow : EditorWindow
   void OnGUI()
   {
     GUILayout.BeginVertical();
+    if (styles == null || styles.Count == 0)
+    {
+      GUILayout.Label("No styles found. Please check your personal access token!");
+      GUILayout.EndVertical();
+      return;
+    }
+    
+    // Show a small question icon button that links to the documentation on the right
+    GUILayout.BeginHorizontal();
+    GUILayout.FlexibleSpace();
+    // Settings button
+    if (GUILayout.Button("Settings", GUILayout.Width(70)))
+    {
+      Settings window = (Settings)EditorWindow.GetWindow(typeof(Settings));
+      window.Show();
+    }
+
+    if (GUILayout.Button("Help", GUILayout.Width(50)))
+    {
+      Application.OpenURL(Constants.DocumentationUrl);
+    }
+
+
+    GUILayout.EndHorizontal();
+
+
+
+
     string selectedStyleName = styles[workspaces[selectedWorkspace].name][selectedStyle].name;
     string selectedWorkspaceName = workspaces[selectedWorkspace].name;
     showPosition = EditorGUILayout.Foldout(showPosition, showPosition ? "Workspace Settings" : selectedWorkspaceName + " - "+ selectedStyleName );
@@ -108,21 +136,20 @@ public class ForgeWindow : EditorWindow
             if (lastAssetSavedPath.Length != 0)
             {
               System.IO.File.WriteAllBytes(lastAssetSavedPath, asset.texture.EncodeToPNG());
+              //Refresh the AssetDatabase after saving the image
+              AssetDatabase.Refresh();
+
+              //Get relative path to the project
+              string path = "Assets" + lastAssetSavedPath.Substring(Application.dataPath.Length);
+
+              //Pick that image in the Project window
+              Object obj = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D));
+              Selection.activeObject = obj;
+              GUIUtility.ExitGUI();
             }
-            //Refresh the AssetDatabase after saving the image
-            AssetDatabase.Refresh();
-
-            //Get relative path to the project
-            string path = "Assets" + lastAssetSavedPath.Substring(Application.dataPath.Length);
-
-            //Pick that image in the Project window
-            Object obj = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D));
-            Selection.activeObject = obj;
           }
           GUILayout.EndHorizontal();
           GUILayout.EndVertical();
-
-
         }
       }
       GUILayout.EndHorizontal();
@@ -140,6 +167,12 @@ public class ForgeWindow : EditorWindow
 
     GraphQL query = new GraphQL(token);
     dynamic result = query.getMyUser();
+    if (result.data.getMyUser.__typename != "User")
+    {
+      EditorPrefs.SetString(Constants.AccessTokenKey, "");
+      EditorUtility.DisplayDialog("Error", "Invalid token. Check your token at Window > Layer AI > Settings", "Ok");
+      return;
+    }
     dynamic workspaceList = result.data.getMyUser.memberships.list;
     foreach (dynamic item in workspaceList)
     {
@@ -160,7 +193,6 @@ public class ForgeWindow : EditorWindow
   {
     string workspaceId = workspaces[selectedWorkspace].id;
     string styleId = styles[workspaces[selectedWorkspace].name][selectedStyle].id;
-    Debug.Log(workspaceId);
 
     GraphQL query = new GraphQL(token);
     dynamic result = query.generateAssets(prompt, workspaceId, styleId);
@@ -171,7 +203,5 @@ public class ForgeWindow : EditorWindow
       asset.loadImage();
       assets.Insert(0, asset);
     }
-
-    Debug.Log(assets);
   }
 }

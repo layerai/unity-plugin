@@ -1,0 +1,16 @@
+{
+  "name": "com.layer.sdk",
+  "version": "0.0.1",
+  "displayName": "Layer SDK",
+  "description": "Generate assets with Layer",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "2.0.0"
+  },
+  "keywords" : [ "layer", "ai", "sdk" ],
+  "author": {
+    "name": "Layer Team",
+    "email": "info@layer.ai",
+    "url":"https://www.layer.ai"
+  }
+
+}
