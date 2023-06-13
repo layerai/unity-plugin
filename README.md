@@ -3,7 +3,7 @@
 ![Images](images/layer_unity_sdk.png)
 
 ## Installation
-- Download the [Layer SDK package](layersdk.unitypackage) to your computer
+- Download the [Layer SDK package](https://github.com/layerai/unity-plugin/raw/main/layersdk.unitypackage) to your computer
 - Open your Unity project
 - Double click/Open the Layer SDK
 
