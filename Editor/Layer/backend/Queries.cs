@@ -42,9 +42,9 @@ public class Queries
       workspaceId: ""_WORKSPACEID"",
       styleId: ""_STYLEID""
     }) {
-      
+
       __typename
-      ... on StyleInference {
+      ... on Inference {
         id,
         files {id, url}
       }
@@ -60,7 +60,7 @@ public class Queries
     removeBackground (input:{
       imageId:""_IMAGEID"",
     }) {
-      
+
       __typename
       ... on RawImage {
         base64
