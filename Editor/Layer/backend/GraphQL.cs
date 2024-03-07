@@ -45,9 +45,10 @@ public class GraphQL
         query);
   }
 
-  public object removeBackground(string imageId) {
+  public object removeBackground(string imageId, string workspaceId) {
     string query = Queries.removeBackground;
     query = query.Replace("_IMAGEID", imageId);
+    query = query.Replace("_WORKSPACEID", workspaceId);
 
     return call(
         "removeBackground",
@@ -57,7 +58,7 @@ public class GraphQL
 
 
   private object call(string operationName, JObject variables, string query)
-  {    
+  {
     // Make a request to the url endpoint with json string and bearer authozartion
     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GraphQL.ENDPOINT);
     request.Method = "POST";
@@ -71,7 +72,7 @@ public class GraphQL
       json.Add("query", query);
       streamWriter.Write(json.ToString());
     }
-    // Get the response
+
     var httpResponse = (HttpWebResponse)request.GetResponse();
     using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
     {
@@ -80,4 +81,3 @@ public class GraphQL
     }
   }
 }
-
