@@ -9,28 +9,31 @@ public class Asset
 {
   public string id;
   public string url;
+  public string workspaceId;
 
   public string prompt;
   public Texture2D texture;
 
-  public Asset(dynamic asset, string prompt)
+  public Asset(dynamic asset, string prompt, string workspaceId)
   {
     this.id = asset.id;
     this.url = asset.url;
+    this.workspaceId = workspaceId;
     this.prompt = prompt;
   }
-
 
   public void removeBackground()
   {
     string token = EditorPrefs.GetString(Constants.AccessTokenKey, "");
     GraphQL query = new GraphQL(token);
-    dynamic result = query.removeBackground(this.id);
-    string base64Image = result.data.removeBackground.base64;
+    dynamic result = query.removeBackground(this.id, this.workspaceId);
+    string dataUri = result.data.removeBackground.dataUri;
+    string base64Image = dataUri.Replace("data:image/png;base64,", "");
     byte[] bytes = System.Convert.FromBase64String(base64Image);
     this.texture = new Texture2D(1, 1);
     this.texture.LoadImage(bytes);
   }
+
   public void loadImage()
   {
     // Load image from url as texture
@@ -48,8 +51,5 @@ public class Asset
         this.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
       }
     };
-
-
-
   }
 }
