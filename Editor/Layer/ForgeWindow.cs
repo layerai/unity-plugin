@@ -59,11 +59,9 @@ public class ForgeWindow : EditorWindow
 
     GUILayout.EndHorizontal();
 
-
-
-
-    string selectedStyleName = styles[workspaces[selectedWorkspace].name][selectedStyle].name;
     string selectedWorkspaceName = workspaces[selectedWorkspace].name;
+    string selectedStyleName = styles[selectedWorkspaceName][selectedStyle].name;
+
     showPosition = EditorGUILayout.Foldout(showPosition, showPosition ? "Workspace Settings" : selectedWorkspaceName + " - "+ selectedStyleName );
     if (showPosition)
     {
@@ -121,7 +119,7 @@ public class ForgeWindow : EditorWindow
             window.asset = asset;
             window.Show();
           }
-          
+
 
           GUILayout.BeginHorizontal();
           if (GUILayout.Button("Remove BG"))
@@ -132,7 +130,7 @@ public class ForgeWindow : EditorWindow
           {
 
             lastAssetSavedPath = EditorUtility.SaveFilePanel("Save Image", "", asset.prompt, "png");
-            
+
             if (lastAssetSavedPath.Length != 0)
             {
               System.IO.File.WriteAllBytes(lastAssetSavedPath, asset.texture.EncodeToPNG());
@@ -173,20 +171,29 @@ public class ForgeWindow : EditorWindow
       EditorUtility.DisplayDialog("Error", "Invalid token. Check your token at Window > Layer AI > Settings", "Ok");
       return;
     }
-    dynamic workspaceList = result.data.getMyUser.memberships.list;
-    foreach (dynamic item in workspaceList)
+    dynamic workspaceList = result.data.getMyUser.memberships.edges;
+    foreach (dynamic workspaceItem in workspaceList)
     {
-      string workspaceName = (string)item.workspace.name;
-      workspaces.Add(new Workspace(item.workspace));
-      dynamic styles = item.workspace.styles.list;
+      dynamic workspace = workspaceItem.node.workspace;
+      dynamic workspaceStyles = workspaceItem.node.workspace.styles.edges;
+
+      string workspaceName = (string)workspace.name;
+
+      if (workspaceStyles.Count > 0) {
+        workspaces.Add(new Workspace(workspace));
+      }
+
       List<Style> styleList = new List<Style>();
-      foreach (dynamic style in styles)
+      foreach (dynamic styleItem in workspaceStyles)
       {
+        dynamic style = styleItem.node;
         styleList.Add(new Style(style));
       }
-      this.styles.Add(workspaceName, styleList);
-    }
 
+      if (styleList.Count > 0) {
+        this.styles.Add(workspaceName, styleList);
+      }
+    }
   }
 
   public void generateAssets()
@@ -199,7 +206,7 @@ public class ForgeWindow : EditorWindow
     dynamic images = result.data.generateImages.files;
     foreach (dynamic image in images)
     {
-      Asset asset = new Asset(image, prompt);
+      Asset asset = new Asset(image, prompt, workspaceId);
       asset.loadImage();
       assets.Insert(0, asset);
     }

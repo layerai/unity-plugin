@@ -1,6 +1,6 @@
 {
   "name": "com.layer.sdk",
-  "version": "0.0.1",
+  "version": "1.2.0",
   "displayName": "Layer SDK",
   "description": "Generate assets with Layer",
   "dependencies": {
