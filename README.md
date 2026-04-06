@@ -12,3 +12,5 @@
 - Click [Create your access token](https://app.layer.ai/settings/tokens)
 - Copy & paste your access token
 - Hit save!
+
+Learn more about Layer in [our website](https://www.layer.ai).
